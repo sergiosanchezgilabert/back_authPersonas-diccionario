@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <%- include('../partials/head'); %>
+</head>
+
+<body class="container">
+
+  <header>
+    <%- include('../partials/header'); %>
+  </header>
+
+  <main>
+    <div class="jumbotron">
+        <h1>Introduce el ID de la persona a eliminar</h1>
+      <table class="table">
+        <tbody>
+            <form id="eliminar" action="http://localhost:8000/api/eliminar/" method="GET">
+              <div class="form-group ">
+                <tr>
+                  <th scope="row">
+                    <input type="text" name="_id" class="form-control" id="_id" placeholder="Id">
+                  </th>
+                  <td><button type="submit" class="btn btn-danger">Eliminar</button></td>
+                </tr>
+              </div>
+            </form>
+        </tbody>
+      </table>
+    </div>
+  </main>
+
+  <footer>
+    <%- include('../partials/footer'); %>
+  </footer>
+
+</body>
+
+</html>

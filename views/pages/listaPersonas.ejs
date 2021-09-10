@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <%- include('../partials/head'); %>
+</head>
+
+<body class="container">
+
+  <header>
+    <%- include('../partials/header'); %>
+  </header>
+
+  <main>
+    <div class="jumbotron">
+      <h1>Lista de Personas</h1>
+      <table class="table">
+        <thead>
+          <tr>
+            <th scope="col">#</th>
+            <th scope="col">User</th>
+            <th scope="col">Name</th>
+            <th scope="col">Surname</th>
+            <th scope="col">Accion</th>
+          </tr>
+        </thead>
+        <tbody>
+          <% personas.forEach(function(persona) { %>
+            <form id="enviar" action="http://localhost:8000/api/editar/" method="GET">
+              <div class="form-group ">
+                <tr>
+                  <th scope="row">
+                    <input type="text" name="_id" class="form-control" id="_id" placeholder=""
+                      value="<%= persona.id_persona %>">
+                  </th>
+                  <td>
+                    <input type="text" name="user" class="form-control" id="user" placeholder=""
+                      value="<%= persona.user %>">
+                  </td>
+                  <td>
+                    <input type="text" name="name" class="form-control" id="name" placeholder=""
+                      value="<%= persona.name %>">
+                  </td>
+                  <td>
+                    <input type="text" name="surname" class="form-control" id="surname" placeholder=""
+                      value="<%= persona.surname %>">
+                  </td>
+                  <td>
+                    <button type="submit" class="btn btn-primary">Editar</button>
+                  </td>
+                </tr>
+              </div>
+            </form>
+            <% }); %>
+        </tbody>
+      </table>
+    </div>
+  </main>
+
+  <footer>
+    <%- include('../partials/footer'); %>
+  </footer>
+
+</body>
+
+</html>
