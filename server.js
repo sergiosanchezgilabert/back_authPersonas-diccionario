@@ -6,6 +6,9 @@ var app = express()
 
 app.use(express.json())
 
+var cors = require('cors');
+app.use(cors());
+
 // Server port
 var HTTP_PORT = process.env['PORT']
 
@@ -34,11 +37,21 @@ app.get("/api/aniadir/", function (req, res) {
 app.get("/aniadirPersona", function (req, res) {
     controlador.aniadirPersona(req, res)
 });
+app.get("/persona", function (req, res) {
+    cors({origin: 'http://localhost:8000'})
+
+    controlador.obtenerPersona(req, res)
+});
 app.get("/listaPersonas", function (req, res) {
     controlador.listaPersona(req, res)
 });
 
+
+
 // Default response for any other request
 app.use(function (req, res) {
-    res.status(404);
+
+    
+    res.status(404)
+  
 })

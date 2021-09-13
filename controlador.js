@@ -2,8 +2,12 @@ var express = require("express")
 var app = express()
 var db = require("./bbdd.js")
 
+//el db esta mal
+
+
 app.set('view engine', 'ejs')
 
+const { QueryTypes } = require('sequelize');
 
 // Root endpoint
 function indexFun(req, res, next) {
@@ -18,6 +22,19 @@ function listaPersonasFun(req, res, next) {
     db.findAll().then(personas => res.status(200).render('pages/listaPersonas', {
         personas: personas
     }));
+
+}
+
+function obtenerPersonaFun(req, res, next) {
+     //sequelize.query('DROP TABLE persona')
+
+    var username=req.query.user
+    var password=req.query.password
+
+    db.findOne({
+        where: { user:username,password:password },
+        order: [ [ 'createdAt', 'DESC' ]],
+    }).then(persona => res.status(200).send(persona));
 
 }
 
@@ -72,6 +89,7 @@ var eliminar = app.get("/api/eliminar/", eliminarFun)
 var eliminarPersona = app.get("/eliminarPersona/", eliminarPersonaFun)
 var aniadir = app.get("/api/aniadir/", aniadirFun)
 var aniadirPersona = app.get("/aniadirPersona", aniadirPersonaFun)
+var obtenerPersona = app.get("/persona", obtenerPersonaFun)
 var listaPersona = app.get("/listaPersonas", listaPersonasFun)
 
-module.exports = { index, editar, eliminar, eliminarPersona, aniadir, aniadirPersona, listaPersona }
+module.exports = { index, editar, eliminar, eliminarPersona, aniadir, aniadirPersona, listaPersona,obtenerPersona }

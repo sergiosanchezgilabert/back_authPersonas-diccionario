@@ -22,6 +22,7 @@ let db = new sqlite3.Database(DBSOURCE, (err) => {
         db.run(`CREATE TABLE persona (
             id_persona INTEGER PRIMARY KEY AUTOINCREMENT,
             user text,
+            password,
             name text, 
             surname text
             )`,
@@ -30,7 +31,7 @@ let db = new sqlite3.Database(DBSOURCE, (err) => {
                 // Table already created
             }else{
                 // Table just created, creating some rows
-                var insert = 'INSERT INTO user (user, name, surname) VALUES (?,?,?)'
+                var insert = 'INSERT INTO user (user,password, name, surname) VALUES (?,?,?)'
                 //db.run(insert, ["admin","admin@example.com",md5("admin123456")])
                 db.run(insert, ["user1","Sergio","Sanchez"])
                 db.run(insert, ["user2","Jose","Rueda"])
@@ -49,7 +50,7 @@ sequelize
   });
 
   const Persona = sequelize.define('persona', {id_persona:{type: Sequelize.INTEGER,autoIncrement: true,primaryKey: true}, 
-  user: Sequelize.TEXT, name: Sequelize.STRING, surname: Sequelize.STRING });
+  user: Sequelize.TEXT,password:Sequelize.TEXT, name: Sequelize.STRING, surname: Sequelize.STRING });
 
   sequelize.sync({ force: true })
   .then(() => {
@@ -61,8 +62,8 @@ sequelize
     console.log(`Database & tables created!`);
 
     Persona.bulkCreate([
-      { user: 'user1', name: 'Sergio',surname:'Sanchez' },
-      { user: 'user2', name: 'Jose',surname:'Rueda' },
+      { user: 'user1',password:'123456', name: 'Sergio',surname:'Sanchez' },
+      { user: 'user2',password:'654321', name: 'Jose',surname:'Rueda' },
     ]).then(function() {
       return Persona.findAll();
     }).then(function(persona) {
