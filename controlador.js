@@ -7,8 +7,6 @@ var db = require("./bbdd.js")
 
 app.set('view engine', 'ejs')
 
-const { QueryTypes } = require('sequelize');
-
 // Root endpoint
 function indexFun(req, res, next) {
     res.status(200).render('pages/index')
@@ -63,10 +61,19 @@ function aniadirFun(req, res, next) {
     let data = req.query
     console.log(data)
 
-    db.create({ user: data.user, name: data.name, surname: data.surname }).then(function (note) {
-        res.status(200).render('pages/persona', {
+    if(data.user==null || data.password==null  || data.name==null || data.surname==null){
+        res.status(400).send({message: 'Imposible Insertar - Datos Erroneos'})
+    }
+
+    /*if(data.repitePassword!==data.password){
+        res.status(400).send()
+    }*/
+
+    db.create({ user: data.user,password:data.password, name: data.name, surname: data.surname }).then(function (note) {
+        /*res.status(200).render('pages/persona', {
             persona: data
-        })
+        })*/
+        res.status(200).send(data)
     });
 }
 
