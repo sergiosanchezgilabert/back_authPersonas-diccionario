@@ -2,6 +2,10 @@ var express = require("express")
 var app = express()
 var db = require("./bbdd.js")
 
+const jwt = require('jsonwebtoken')
+const bcrypt = require('bcryptjs')
+const SECRET_KEY = 'secretkey123456'
+
 //el db esta mal
 
 
@@ -24,15 +28,35 @@ function listaPersonasFun(req, res, next) {
 }
 
 function obtenerPersonaFun(req, res, next) {
-     //sequelize.query('DROP TABLE persona')
+    //sequelize.query('DROP TABLE persona')
 
-    var username=req.query.user
-    var password=req.query.password
+    var username = req.query.user
+    var password = req.query.password
 
     db.findOne({
-        where: { user:username,password:password },
-        order: [ [ 'createdAt', 'DESC' ]],
-    }).then(persona => res.status(200).send(persona));
+        where: { user: username },
+        order: [['createdAt', 'DESC']],
+    }).then(usuario => {
+        if(usuario!==null){
+            const resultPassword=bcrypt.compareSync(password,usuario.password)
+            if(resultPassword){
+                const expiresIn = 24 * 60 * 60
+                const accessToken = jwt.sign({ id: usuario.id_persona },
+                    SECRET_KEY, { expiresIn: expiresIn })
+
+                var userResp = {
+                    name: usuario.name,
+                    user: usuario.user,
+                    accessToken: accessToken,
+                    expiresIn: expiresIn
+                }
+            }
+            res.status(200).send(userResp)
+        }else{
+            res.status(404).send({message:'Imposible obtener'})
+
+        }
+    });
 
 }
 
@@ -57,24 +81,44 @@ function aniadirPersonaFun(req, res) {
 
 function aniadirFun(req, res, next) {
 
-    console.log(req.query)
     let data = req.query
-    console.log(data)
 
-    if(data.user==null || data.password==null  || data.name==null || data.surname==null){
-        res.status(400).send({message: 'Imposible Insertar - Datos Erroneos'})
+    if (data.user == null || data.password == null || data.name == null || data.surname == null) {
+        res.status(400).send({ message: 'Imposible Insertar - Datos Erroneos' })
     }
+
+    db.findOne({
+        where: { user: data.user },
+        order: [['createdAt', 'DESC']],
+    }).then(persona => {
+        if (persona !== null) {
+            res.status(403).send({ message: 'Nombre de usuario no disponible' })
+        } else {
+            db.create({ user: data.user, password: bcrypt.hashSync(data.password), name: data.name, surname: data.surname }).then(usuario => {
+                /*res.status(200).render('pages/persona', {
+                    persona: data
+                })*/
+                const expiresIn = 24 * 60 * 60
+                const accessToken = jwt.sign({ id: usuario.id_persona },
+                    SECRET_KEY, { expiresIn: expiresIn })
+
+                var userResp = {
+                    name: usuario.name,
+                    user: usuario.user,
+                    accessToken: accessToken,
+                    expiresIn: expiresIn
+                }
+
+                res.status(200).send(userResp)
+            });
+        }
+    });
 
     /*if(data.repitePassword!==data.password){
         res.status(400).send()
     }*/
 
-    db.create({ user: data.user,password:data.password, name: data.name, surname: data.surname }).then(function (note) {
-        /*res.status(200).render('pages/persona', {
-            persona: data
-        })*/
-        res.status(200).send(data)
-    });
+
 }
 
 function eliminarPersonaFun(req, res, next) {
@@ -99,4 +143,4 @@ var aniadirPersona = app.get("/aniadirPersona", aniadirPersonaFun)
 var obtenerPersona = app.get("/persona", obtenerPersonaFun)
 var listaPersona = app.get("/listaPersonas", listaPersonasFun)
 
-module.exports = { index, editar, eliminar, eliminarPersona, aniadir, aniadirPersona, listaPersona,obtenerPersona }
+module.exports = { index, editar, eliminar, eliminarPersona, aniadir, aniadirPersona, listaPersona, obtenerPersona }

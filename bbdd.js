@@ -6,6 +6,10 @@ const DBSOURCE = "db.sqlite"
 
 const Sequelize = require('sequelize');
 
+const jwt = require('jsonwebtoken')
+const bcrypt = require('bcryptjs')
+const SECRET_KEY = 'secretkey123456'
+
 // Option 1: Passing parameters separately
 const sequelize = new Sequelize({
   dialect: 'sqlite',
@@ -62,8 +66,8 @@ sequelize
     console.log(`Database & tables created!`);
 
     Persona.bulkCreate([
-      { user: 'user1',password:'123456', name: 'Sergio',surname:'Sanchez' },
-      { user: 'user2',password:'654321', name: 'Jose',surname:'Rueda' },
+      { user: 'user1',password:bcrypt.hashSync('123456'), name: 'Sergio',surname:'Sanchez' },
+      { user: 'user2',password:bcrypt.hashSync('654321'), name: 'Jose',surname:'Rueda' },
     ]).then(function() {
       return Persona.findAll();
     }).then(function(persona) {
