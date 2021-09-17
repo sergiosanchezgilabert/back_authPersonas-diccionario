@@ -31,6 +31,12 @@ app.get("/api/eliminar/", function (req, res) {
 app.get("/eliminarPersona/", function (req, res) {
     controlador.eliminarPersona(req, res)
 });
+app.get("/api/ver/", function (req, res) {
+    controlador.ver(req, res)
+});
+app.get("/verPersona/", function (req, res) {
+    controlador.verPersona(req, res)
+});
 app.get("/api/aniadir/", function (req, res) {
     controlador.aniadir(req, res)
 });

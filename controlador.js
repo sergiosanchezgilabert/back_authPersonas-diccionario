@@ -20,11 +20,9 @@ function indexFun(req, res, next) {
 
 function listaPersonasFun(req, res, next) {
     // db.run('DROP TABLE persona')
-
     db.findAll().then(personas => res.status(200).render('pages/listaPersonas', {
         personas: personas
     }));
-
 }
 
 function obtenerPersonaFun(req, res, next) {
@@ -133,14 +131,26 @@ function eliminarFun(req, res, next) {
     });
 }
 
+function verPersonaFun(req, res, next) {
+    res.status(200).render('pages/verPersona')
+}
+
+function verFun(req, res, next) {
+    db.findByPk(req.query._id).then((persona) => {
+        res.status(200).send(persona)
+    });
+}
+
 // index page 
 var index = app.get('/', indexFun)
 var editar = app.get("/api/editar/", editarFun)
 var eliminar = app.get("/api/eliminar/", eliminarFun)
 var eliminarPersona = app.get("/eliminarPersona/", eliminarPersonaFun)
+var ver = app.get("/api/ver/", verFun)
+var verPersona = app.get("/verPersona/", verPersonaFun)
 var aniadir = app.get("/api/aniadir/", aniadirFun)
 var aniadirPersona = app.get("/aniadirPersona", aniadirPersonaFun)
 var obtenerPersona = app.get("/persona", obtenerPersonaFun)
 var listaPersona = app.get("/listaPersonas", listaPersonasFun)
 
-module.exports = { index, editar, eliminar, eliminarPersona, aniadir, aniadirPersona, listaPersona, obtenerPersona }
+module.exports = { index, editar, eliminar, eliminarPersona, aniadir, aniadirPersona, listaPersona, obtenerPersona, ver, verPersona }
