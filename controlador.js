@@ -6,8 +6,9 @@ const jwt = require('jsonwebtoken')
 const bcrypt = require('bcryptjs')
 const SECRET_KEY = 'secretkey123456'
 
-//el db esta mal
-
+//Necesario para enviar datos en method POST
+app.use(express.json());
+app.use(express.urlencoded()); 
 
 app.set('view engine', 'ejs')
 
@@ -79,11 +80,13 @@ function aniadirPersonaFun(req, res) {
 
 function aniadirFun(req, res, next) {
 
-    let data = req.query
+    let data = req.body
 
     if (data.user == null || data.password == null || data.name == null || data.surname == null) {
         res.status(400).send({ message: 'Imposible Insertar - Datos Erroneos' })
     }
+
+    console.log(data)
 
     db.findOne({
         where: { user: data.user },
@@ -96,6 +99,7 @@ function aniadirFun(req, res, next) {
                 /*res.status(200).render('pages/persona', {
                     persona: data
                 })*/
+                
                 const expiresIn = 24 * 60 * 60
                 const accessToken = jwt.sign({ id: usuario.id_persona },
                     SECRET_KEY, { expiresIn: expiresIn })
@@ -110,9 +114,10 @@ function aniadirFun(req, res, next) {
                 res.status(200).send(userResp)
             });
         }
-    });
+    })
 
-    /*if(data.repitePassword!==data.password){
+  /*  
+    if(data.repitePassword!==data.password){
         res.status(400).send()
     }*/
 
@@ -143,12 +148,12 @@ function verFun(req, res, next) {
 
 // index page 
 var index = app.get('/', indexFun)
-var editar = app.get("/api/editar/", editarFun)
-var eliminar = app.get("/api/eliminar/", eliminarFun)
+var editar = app.put("/api/editar/", editarFun)
+var eliminar = app.delete("/api/eliminar/", eliminarFun)
 var eliminarPersona = app.get("/eliminarPersona/", eliminarPersonaFun)
 var ver = app.get("/api/ver/", verFun)
 var verPersona = app.get("/verPersona/", verPersonaFun)
-var aniadir = app.get("/api/aniadir/", aniadirFun)
+var aniadir = app.post("/api/aniadir/", aniadirFun)
 var aniadirPersona = app.get("/aniadirPersona", aniadirPersonaFun)
 var obtenerPersona = app.get("/persona", obtenerPersonaFun)
 var listaPersona = app.get("/listaPersonas", listaPersonasFun)

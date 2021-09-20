@@ -22,10 +22,10 @@ app.listen(HTTP_PORT, () => {
 app.get('/', function (req, res) {
     controlador.index(req, res)
 });
-app.get("/api/editar/", function (req, res) {
+app.put("/api/editar/", function (req, res) {
     controlador.editar(req, res)
 });
-app.get("/api/eliminar/", function (req, res) {
+app.delete("/api/eliminar/", function (req, res) {
     controlador.eliminar(req, res)
 });
 app.get("/eliminarPersona/", function (req, res) {
@@ -37,7 +37,8 @@ app.get("/api/ver/", function (req, res) {
 app.get("/verPersona/", function (req, res) {
     controlador.verPersona(req, res)
 });
-app.get("/api/aniadir/", function (req, res) {
+app.post("/api/aniadir/", function (req, res) {
+    console.log('Hola')
     controlador.aniadir(req, res)
 });
 app.get("/aniadirPersona", function (req, res) {
