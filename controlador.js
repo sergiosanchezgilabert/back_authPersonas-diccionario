@@ -4,11 +4,13 @@ var db = require("./bbdd.js")
 
 const jwt = require('jsonwebtoken')
 const bcrypt = require('bcryptjs')
-const SECRET_KEY = 'secretkey123456'
+const SECRET_KEY = 'secretkey123456';
+const jwt_decode = require('jwt-decode');
+
 
 //Necesario para enviar datos en method POST
 app.use(express.json());
-app.use(express.urlencoded()); 
+app.use(express.urlencoded());
 
 app.set('view engine', 'ejs')
 
@@ -36,9 +38,9 @@ function obtenerPersonaFun(req, res, next) {
         where: { user: username },
         order: [['createdAt', 'DESC']],
     }).then(usuario => {
-        if(usuario!==null){
-            const resultPassword=bcrypt.compareSync(password,usuario.password)
-            if(resultPassword){
+        if (usuario !== null) {
+            const resultPassword = bcrypt.compareSync(password, usuario.password)
+            if (resultPassword) {
                 const expiresIn = 24 * 60 * 60
                 const accessToken = jwt.sign({ id: usuario.id_persona },
                     SECRET_KEY, { expiresIn: expiresIn })
@@ -51,8 +53,8 @@ function obtenerPersonaFun(req, res, next) {
                 }
             }
             res.status(200).send(userResp)
-        }else{
-            res.status(404).send({message:'Imposible obtener'})
+        } else {
+            res.status(401).send({ message: 'Imposible obtener' })
 
         }
     });
@@ -74,6 +76,52 @@ function editarFun(req, res, next) {
     });
 }
 
+function googlePersonaFun(req, res) {
+    res.render('pages/aniadirPersona')
+}
+
+function googleFun(req, res, next) {
+    let data = req.body
+
+    var token = data.idToken
+    var decoded = jwt_decode(token)
+
+    if (decoded) {
+        db.findOne({
+            where: { user: data.email },
+            order: [['createdAt', 'DESC']],
+        }).then(persona => {
+            console.log(persona + 'Persona encontrada')
+            if (persona !== null) {
+                var userResp = {
+                    name: persona.name,
+                    user: persona.user,
+                    accessToken: data.idToken,
+                    expiresIn: data.response.expires_in
+                }
+
+                res.status(200).send(userResp)
+            } else {
+                var randomstring = Math.random().toString(36).slice(-8);
+                db.create({ user: data.email, password: randomstring, name: data.name }).then(usuario => {
+
+                    var userResp = {
+                        name: usuario.name,
+                        user: usuario.user,
+                        accessToken: data.idToken,
+                        expiresIn: data.response.expires_in
+                    }
+
+                    res.status(200).send(userResp)
+                });
+            }
+        })
+    }
+    else {
+        res.status(400).send({ message: 'Imposible Insertar - Token Erroneo' })
+    }
+}
+
 function aniadirPersonaFun(req, res) {
     res.render('pages/aniadirPersona')
 }
@@ -90,7 +138,7 @@ function aniadirFun(req, res, next) {
 
     db.findOne({
         where: { user: data.user },
-        order: [['createdAt', 'DESC']],
+        order: [['createdAt', 'DESC']]
     }).then(persona => {
         if (persona !== null) {
             res.status(403).send({ message: 'Nombre de usuario no disponible' })
@@ -99,7 +147,7 @@ function aniadirFun(req, res, next) {
                 /*res.status(200).render('pages/persona', {
                     persona: data
                 })*/
-                
+
                 const expiresIn = 24 * 60 * 60
                 const accessToken = jwt.sign({ id: usuario.id_persona },
                     SECRET_KEY, { expiresIn: expiresIn })
@@ -116,10 +164,10 @@ function aniadirFun(req, res, next) {
         }
     })
 
-  /*  
-    if(data.repitePassword!==data.password){
-        res.status(400).send()
-    }*/
+    /*  
+      if(data.repitePassword!==data.password){
+          res.status(400).send()
+      }*/
 
 
 }
@@ -155,7 +203,12 @@ var ver = app.get("/api/ver/", verFun)
 var verPersona = app.get("/verPersona/", verPersonaFun)
 var aniadir = app.post("/api/aniadir/", aniadirFun)
 var aniadirPersona = app.get("/aniadirPersona", aniadirPersonaFun)
+var google = app.post("/api/google/", googleFun)
+var googlePersona = app.get("/googlePersona", googlePersonaFun)
 var obtenerPersona = app.get("/persona", obtenerPersonaFun)
 var listaPersona = app.get("/listaPersonas", listaPersonasFun)
 
-module.exports = { index, editar, eliminar, eliminarPersona, aniadir, aniadirPersona, listaPersona, obtenerPersona, ver, verPersona }
+module.exports = {
+    index, editar, eliminar, eliminarPersona, aniadir,
+    aniadirPersona, listaPersona, obtenerPersona, ver, verPersona, google, googlePersona
+}

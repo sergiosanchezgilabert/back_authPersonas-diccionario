@@ -9,6 +9,7 @@
     "ejs": "^3.1.5",
     "express": "^4.17.1",
     "jsonwebtoken": "^8.5.1",
+    "jwt-decode": "^3.1.2",
     "md5": "^2.3.0",
     "mongoose": "^6.0.5",
     "sequelize": "^6.6.5",

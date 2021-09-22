@@ -44,6 +44,12 @@ app.post("/api/aniadir/", function (req, res) {
 app.get("/aniadirPersona", function (req, res) {
     controlador.aniadirPersona(req, res)
 });
+app.post("/api/google/", function (req, res) {
+    controlador.google(req, res)
+});
+app.get("/googlePersona", function (req, res) {
+    controlador.googlePersona(req, res)
+});
 app.get("/persona", function (req, res) {
     cors({origin: 'http://localhost:8000'})
 
